@@ -1043,26 +1043,7 @@ body {
     </div>
     <div id="childrenList" class="cl-children-list"></div>
   </div>
-  <div id="cl-detailPage" class="cl-detail-page">
-    <div class="cl-detail-header">
-      <button class="cl-back-btn" onclick="APP_children_goBack()">←</button>
-      <div class="cl-detail-header-title" id="detailHeaderTitle">児童名</div>
-      <div style="width: 36px;"></div>
-    </div>
-    <div class="cl-detail-profile">
-      <div class="cl-detail-avatar" id="detailAvatar">🧒</div>
-      <div class="cl-detail-name" id="detailName">名前</div>
-      <div class="cl-detail-sub" id="detailSub">学年</div>
-    </div>
-    <div class="cl-detail-menu">
-      <h3>関連情報</h3>
-      <div id="detailMenuItems"></div>
-    </div>
-    <div class="cl-detail-actions">
-      <button class="btn btn-secondary btn-sm" onclick="APP_children_openEditModal()" style="flex: 1;">編集</button>
-      <button class="btn btn-danger btn-sm" onclick="APP_children_confirmDelete()" style="flex: 1;">削除</button>
-    </div>
-  </div>
+  <!-- 児童詳細ページ削除済み -->
 </div>
 
 <!-- Daily Report (Nippou) Page -->
@@ -1155,8 +1136,8 @@ body {
 
     <!-- Notes -->
     <div class="cr-section">
-      <div class="cr-label">前回の様子（メモ）</div>
-      <textarea class="cr-textarea" id="childNotes" rows="6" placeholder="児童の前回の様子を入力してください...&#10;例：&#10;宿題に集中して取り組めた&#10;お友達とトラブル → 自分で謝れた"></textarea>
+      <div class="cr-label">本日の様子（メモ）</div>
+      <textarea class="cr-textarea" id="childNotes" rows="6" placeholder="児童の本日の様子を入力してください...&#10;例：&#10;宿題に集中して取り組めた&#10;お友達とトラブル → 自分で謝れた"></textarea>
     </div>
 
     <!-- Generate Button -->
@@ -1739,7 +1720,7 @@ const ChildrenApp = (function() {
       const initials = child.initial || child.name.charAt(0);
       html += `
         <div class="cl-child-item" style="display:flex;align-items:center;gap:10px;">
-          <div style="flex:1;display:flex;align-items:center;gap:10px;cursor:pointer;-webkit-tap-highlight-color:transparent;" onclick="APP_children_openDetail('${child.id}')">
+          <div style="flex:1;display:flex;align-items:center;gap:10px;cursor:pointer;-webkit-tap-highlight-color:transparent;" onclick="APP_children_openEditFromList('${child.id}')">
             <div class="cl-child-avatar">${initials}</div>
             <div class="cl-child-info">
               <div class="cl-child-name">${escapeHtml(child.name)}</div>
@@ -2145,7 +2126,7 @@ const NippouApp = (function() {
             <span class="np-note-name">${escapeHtml(child.name)}</span>
             <span class="np-note-initial">${escapeHtml(child.initial || '')}</span>
           </div>
-          <textarea class="np-textarea child-note" rows="2" placeholder="本日の様子を入力...">${escapeHtml(savedNote)}</textarea>
+          <textarea class="np-textarea child-note" rows="2" placeholder="前回の様子を入力...">${escapeHtml(savedNote)}</textarea>
         `;
         fragment.appendChild(card);
       }
@@ -2549,7 +2530,7 @@ const CareApp = (function() {
 
     const todayNotes = document.getElementById('childNotes').value.trim();
     if (!todayNotes) {
-      showToast('⚠ 本日の様子を入力してください');
+      showToast('⚠ 前回の様子を入力してください');
       return;
     }
 
