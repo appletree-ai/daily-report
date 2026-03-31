@@ -2584,7 +2584,7 @@ const CareApp = (function() {
     if (selectedChildId) saveChildCareData();
 
     const raw = JSON.parse(localStorage.getItem('appletree_children') || '{}');
-    const children = Array.isArray(raw) ? raw : Object.values(raw);
+    const children = Array.isArray(raw) ? raw : (raw.children ? raw.children : Object.values(raw));
     const child = children.find(c => c.id === childId);
     if (!child) return;
 
