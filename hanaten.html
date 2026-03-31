@@ -1640,6 +1640,26 @@ const ChildrenApp = (function() {
       } catch(e) {}
       localStorage.setItem('fix_remove_yano', '1');
     }
+    // 放出児童を既存データに追加（一度だけ）
+    if (!localStorage.getItem('seed_hanaten_v1')) {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        const hanatenChildren = SEED_DATA.filter(c => c.facility === '放出');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          const existingIds = new Set((parsed.children || []).map(c => c.id));
+          hanatenChildren.forEach(c => {
+            if (!existingIds.has(c.id)) {
+              parsed.children.push(c);
+            }
+          });
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+        } else {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify({ children: hanatenChildren }));
+        }
+      } catch(e) {}
+      localStorage.setItem('seed_hanaten_v1', '1');
+    }
   }
 
   function loadData() {
