@@ -1194,7 +1194,7 @@ body {
     <div class="cr-facility-badge" id="facility-badge">📍 大淀</div>
 
     <!-- Selected Child Bar (放出専用) -->
-    <div id="selectedChildBar" style="display:none;background:linear-gradient(135deg,var(--primary),var(--accent));color:var(--white);border-radius:var(--radius);padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;gap:12px;">
+    <div id="selectedChildBar" style="display:none;background:linear-gradient(135deg,var(--primary),var(--accent));color:var(--white);border-radius:var(--radius);padding:12px 16px;margin-bottom:14px;align-items:center;gap:12px;">
       <div id="selectedChildAvatar" style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;"></div>
       <div style="flex:1;min-width:0;">
         <div id="selectedChildName" style="font-size:16px;font-weight:700;"></div>
@@ -2867,14 +2867,38 @@ const CareApp = (function() {
         progText += `●${prog}\n${content}\n\n`;
       });
 
-      const systemPrompt = `あなたは放課後等デイサービスのケア記録を作成するアシスタントです。
-以下のプログラム内容と児童の様子メモから、保護者向けのケア記録を作成してください。
+      const systemPrompt = `あなたは放課後等デイサービス（重心児童・医療的ケア児童対応）のケア記録を作成するアシスタントです。
+以下のプログラム内容・児童の様子メモ・医療的ケア情報から、保護者向けのケア記録を作成してください。
 
-【生成条件】
-${conditionText}
+【出力フォーマット】
+＜本日のレク、機能訓練の様子＞と＜医療的ケアの様子＞の2セクションで構成してください。
+※冒頭の挨拶文・末尾の挨拶文はシステムが自動付与するため、出力しないでください。
+※区切り線（ーーー）も出力しないでください。
 
+【作成条件】
+・500文字前後（医療的ケアの項目が多ければ文字数超過可能）
+・温かく丁寧な文体
+・事実は変えない
+・福祉施設らしい表現
+・感想は最小限
+・記号を組み合わせて作る顔文字を適度に使用（例：(^^) (*^^*) (^_^) (^o^)）
+・児童の呼び名は＜本日のレク、機能訓練の様子＞のみに適度に入れる
+・＜医療的ケアの様子＞では児童名を使わず記述する
+・信頼を積み重ねられる設計
+・保護者が安心できる文章に整える
+・重心児童は自己表現に難しさがあるため、スタッフが細かなサインを受け取り翻訳・代弁する。ポジティブな表現で保護者に伝わる文章にする
+・医療的ケアテンプレートで記入のない項目は出力しない
+・入力に専門用語・医療用語が含まれた場合、保護者が読みやすい表現に変換して出力する
+
+【医療的ケアの出力形式】
+・バイタル（体温・SpO₂・脈拍等）は「来所時体温○○℃、SpO₂○○％、脈拍○○回/分と安定して経過されています。」のように自然な文章で記述
+・排泄は回数・性状を簡潔に記述
+・皮膚・処置は部位と対応を記述
+・入浴実施の有無と入浴後の処置を記述
+・全体の経過を締めの一文でまとめる
+
+${conditionText ? '【追加条件】\\n' + conditionText + '\\n' : ''}
 【プライバシー保護ルール】
-- 児童名はイニシャル（A. B. C.等）のまま記載してください
 - 以下の情報は絶対に出力に含めないでください：
   ・生年月日 ・住所 ・保護者の連絡先
   ・障害名・診断名（特に詳細なもの）
@@ -2885,8 +2909,9 @@ ${conditionText}
       const mcData = collectMedicalCareData();
       const mcSection = mcData ? `\n＜医療的ケアの様子＞\n${mcData}` : '';
 
-      // 児童情報（選択されている場合）
-      const childInfo = selectedChildData ? `対象児童：${selectedChildData.name}${selectedChildData.callName ? '（' + selectedChildData.callName + '）' : ''}\n\n` : '';
+      // 児童情報（選択されている場合）- 呼び名のみ送信（フルネームは送らない）
+      const childDisplayName = selectedChildData ? (selectedChildData.callName || selectedChildData.name.charAt(0) + 'くん') : '';
+      const childInfo = childDisplayName ? `対象児童の呼び名：${childDisplayName}\n\n` : '';
 
       const userMessage = `${childInfo}本日のプログラム：\n${progText}児童の様子：\n${sanitizedNotes}${mcSection}`;
 
@@ -2915,19 +2940,13 @@ ${conditionText}
       const result = await response.json();
       let output = result.choices[0].message.content.trim();
 
-      // イニシャルを元の名前に復元
-      output = restoreNamesInOutput(output);
+      // ケア記録では名前を復元しない（イニシャルのまま出力）
+      // output = restoreNamesInOutput(output);
 
-      // 完成形を組み立て（元アプリと同じ形式）
-      let fullOutput = '本日も元気に過ごされております♪\n\n';
-      if (state.todayPrograms.length > 0) {
-        fullOutput += 'ーーーーーーー\n';
-        state.todayPrograms.forEach(prog => {
-          const content = state.progContents[prog] || PROG_PLACEHOLDERS[prog] || prog;
-          fullOutput += `●${prog}\n${content}\n\n`;
-        });
-      }
-      fullOutput += output + '\n\nーーーーーーーー\n本日もありがとうございました(*^^*)';
+      // 完成形を組み立て（docxプロンプトの形式に準拠）
+      let fullOutput = '本日も元気にご来所されております（^^）\n\nーーーーーーーーーーーーーーーーー\n\n';
+      fullOutput += output;
+      fullOutput += '\n\nーーーーーーー\n本日もありがとうございました(^ ^)';
 
       document.getElementById('careOutputBox').textContent = fullOutput;
       document.getElementById('careOutput').style.display = 'block';
