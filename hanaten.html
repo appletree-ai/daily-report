@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>AppleTree Daily - 放出</title>
+<title>AppleTree Daily</title>
 <style>
 :root {
   --primary: #2b6cb0;
@@ -839,74 +839,6 @@ body {
 .confirm-box .message { font-size: 14px; color: var(--gray-500); margin-bottom: 20px; }
 .confirm-btns { display: flex; gap: 10px; }
 
-/* ===== Medical Care Section ===== */
-.mc-category {
-  margin-bottom: 14px;
-  border: 1px solid var(--gray-200);
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-}
-.mc-cat-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 12px;
-  background: var(--gray-50);
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--gray-700);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-.mc-cat-header .mc-toggle { font-size: 12px; color: var(--gray-400); transition: transform 0.2s; }
-.mc-cat-header.open .mc-toggle { transform: rotate(90deg); }
-.mc-cat-body { padding: 8px 12px 12px; display: none; }
-.mc-cat-header.open + .mc-cat-body { display: block; }
-.mc-field {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 6px;
-}
-.mc-field-label {
-  font-size: 13px;
-  color: var(--gray-600);
-  min-width: 90px;
-  flex-shrink: 0;
-}
-.mc-field-input {
-  flex: 1;
-  border: 1px solid var(--gray-200);
-  border-radius: 6px;
-  padding: 6px 10px;
-  font-size: 13px;
-  font-family: inherit;
-  outline: none;
-  transition: border-color 0.2s;
-}
-.mc-field-input:focus { border-color: var(--primary); }
-.mc-field-remove {
-  background: none;
-  border: none;
-  color: var(--gray-400);
-  cursor: pointer;
-  font-size: 16px;
-  padding: 2px;
-  line-height: 1;
-}
-.mc-field-remove:hover { color: var(--danger); }
-.mc-add-btn {
-  background: none;
-  border: 1px dashed var(--gray-300);
-  border-radius: 6px;
-  padding: 4px 10px;
-  font-size: 12px;
-  color: var(--gray-500);
-  cursor: pointer;
-  margin-top: 4px;
-}
-.mc-add-btn:hover { border-color: var(--primary); color: var(--primary); }
-
 /* ===== Password Lock ===== */
 .lock-screen {
   text-align: center;
@@ -1091,9 +1023,10 @@ body {
   <button class="header-btn" onclick="APP_suite_openSettings()" title="設定">⚙</button>
 </div>
 
-<!-- ===== Facility Tabs (Hidden - 放出専用) ===== -->
-<div class="facility-tabs" style="display:none;">
-  <button class="facility-tab active" data-facility="放出" onclick="APP_suite_switchFacility('放出')">放出</button>
+<!-- ===== Facility Tabs (Shared) ===== -->
+<div class="facility-tabs">
+  <button class="facility-tab active" data-facility="大淀" onclick="APP_suite_switchFacility('大淀')">大淀</button>
+  <button class="facility-tab" data-facility="神崎川" onclick="APP_suite_switchFacility('神崎川')">神崎川</button>
 </div>
 
 <!-- ===== Page Containers ===== -->
@@ -1144,7 +1077,7 @@ body {
     <!-- Lower Fixed Text -->
     <div class="np-section">
       <div class="np-section-label">下部固定テキスト</div>
-      <textarea class="np-textarea" id="lowerText" rows="2" placeholder="下部固定テキストを入力">個別支援計画に沿った資料により、本日来所児童の共有を行いました（放出）</textarea>
+      <textarea class="np-textarea" id="lowerText" rows="2" placeholder="下部固定テキストを入力">個別支援計画に沿った資料により、本日来所児童の共有を行いました</textarea>
     </div>
 
     <!-- Generate Button -->
@@ -1193,16 +1126,6 @@ body {
   <div class="cr-container">
     <div class="cr-facility-badge" id="facility-badge">📍 大淀</div>
 
-    <!-- Selected Child Bar (放出専用) -->
-    <div id="selectedChildBar" style="display:none;background:linear-gradient(135deg,var(--primary),var(--accent));color:var(--white);border-radius:var(--radius);padding:12px 16px;margin-bottom:14px;align-items:center;gap:12px;">
-      <div id="selectedChildAvatar" style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;"></div>
-      <div style="flex:1;min-width:0;">
-        <div id="selectedChildName" style="font-size:16px;font-weight:700;"></div>
-        <div id="selectedChildMeta" style="font-size:12px;opacity:0.8;"></div>
-      </div>
-      <button onclick="APP_care_clearSelectedChild()" style="background:rgba(255,255,255,0.15);border:none;color:var(--white);width:32px;height:32px;border-radius:50%;font-size:14px;cursor:pointer;flex-shrink:0;">×</button>
-    </div>
-
     <!-- Programs -->
     <div class="cr-section">
       <div class="cr-label">本日のプログラム</div>
@@ -1215,13 +1138,6 @@ body {
     <div class="cr-section">
       <div class="cr-label">本日の様子（メモ）</div>
       <textarea class="cr-textarea" id="childNotes" rows="6" placeholder="児童の本日の様子を入力してください...&#10;例：&#10;宿題に集中して取り組めた&#10;お友達とトラブル → 自分で謝れた"></textarea>
-    </div>
-
-    <!-- Medical Care Section (放出専用) -->
-    <div class="cr-section" id="medicalCareSection">
-      <div class="cr-label">🏥 医療的ケアの様子</div>
-      <p style="font-size:12px;color:var(--gray-500);margin-bottom:10px;">記入のある項目のみAIに反映されます</p>
-      <div id="medicalCareCategories"></div>
     </div>
 
     <!-- Generate Button -->
@@ -1325,9 +1241,14 @@ body {
         <!-- Nippou Settings -->
         <div id="nippou-tab" class="settings-content">
           <div class="modal-section">
-            <h3>作成条件（放出）</h3>
+            <h3>作成条件（大淀）</h3>
             <p>AIへの追加指示を記入できます</p>
-            <textarea id="conditionHanaten" rows="3" placeholder="例：特に活動内容を詳しく記述してください" class="cr-textarea"></textarea>
+            <textarea id="conditionOyodo" rows="3" placeholder="例：特に活動内容を詳しく記述してください" class="cr-textarea"></textarea>
+          </div>
+          <div class="modal-section">
+            <h3>作成条件（神崎川）</h3>
+            <p>AIへの追加指示を記入できます</p>
+            <textarea id="conditionKanzaki" rows="3" placeholder="例：特に活動内容を詳しく記述してください" class="cr-textarea"></textarea>
           </div>
           <div style="margin-top:12px;">
             <button class="btn btn-primary btn-sm" onclick="APP_suite_saveNippouConditions()" style="width:auto;">条件を保存</button>
@@ -1342,9 +1263,13 @@ body {
             <button class="btn btn-secondary btn-sm" onclick="APP_care_editPrograms()" style="width:auto;">編集</button>
           </div>
           <div class="modal-section">
-            <h3>ケア記録 生成条件（放出）</h3>
-            <p style="font-size:12px; color:var(--gray-500); margin-bottom:6px;">重心・医ケア児童向けケア記録のAI生成条件です。現場の反応に合わせて調整してください。</p>
-            <textarea id="careConditionHanaten" rows="8" class="cr-textarea"></textarea>
+            <h3>ケア記録 生成条件（大淀）</h3>
+            <p style="font-size:12px; color:var(--gray-500); margin-bottom:6px;">保護者向けケア記録のAI生成条件です。現場の反応に合わせて調整してください。</p>
+            <textarea id="careConditionOyodo" rows="8" class="cr-textarea"></textarea>
+          </div>
+          <div class="modal-section">
+            <h3>ケア記録 生成条件（神崎川）</h3>
+            <textarea id="careConditionKanzaki" rows="8" class="cr-textarea"></textarea>
           </div>
           <div style="margin-top:12px;">
             <button class="btn btn-primary btn-sm" onclick="APP_suite_saveCareConditions()" style="width:auto;">条件を保存</button>
@@ -1433,7 +1358,7 @@ body {
 // ================================================================
 
 let currentPage = 'children';
-let currentFacility = '放出'; // 放出専用：施設固定
+let currentFacility = localStorage.getItem('suite_facility') || '大淀';
 const pageInited = { children: false, nippou: false, care: false };
 
 function showToast(msg) {
@@ -1455,10 +1380,6 @@ function escapeHtml(str) {
 
 const AppSuite = (function() {
   function switchPage(pageId) {
-    // ケア記録から離れる時に児童データを自動保存
-    if (currentPage === 'care' && window.APP_care_saveChildCareData) {
-      window.APP_care_saveChildCareData();
-    }
     // Hide all pages
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     // Show target page
@@ -1541,23 +1462,26 @@ const AppSuite = (function() {
 
   const NIPPOU_CONDITION_DEFAULTS = {
     '大淀': '・一次情報を元に文章を整理してください、実地指導時に役所の方に見られます\n・児童フルネーム：内容',
-    '神崎川': '・一次情報を元に文章を整理してください、実地指導時に役所の方に見られます\n・児童フルネーム：内容',
-    '放出': '・一次情報を元に文章を整理してください、実地指導時に役所の方に見られます\n・児童フルネーム：内容\n・重心児童・医療的ケア児童の記録に適した表現で'
+    '神崎川': '・一次情報を元に文章を整理してください、実地指導時に役所の方に見られます\n・児童フルネーム：内容'
   };
 
   function loadNippouConditions() {
-    const savedHanaten = localStorage.getItem('nippou_condition_放出');
-    document.getElementById('conditionHanaten').value = (savedHanaten !== null && savedHanaten.trim() !== '') ? savedHanaten : NIPPOU_CONDITION_DEFAULTS['放出'];
+    const savedOyodo = localStorage.getItem('nippou_condition_大淀');
+    const savedKanzaki = localStorage.getItem('nippou_condition_神崎川');
+    document.getElementById('conditionOyodo').value = (savedOyodo !== null && savedOyodo.trim() !== '') ? savedOyodo : NIPPOU_CONDITION_DEFAULTS['大淀'];
+    document.getElementById('conditionKanzaki').value = (savedKanzaki !== null && savedKanzaki.trim() !== '') ? savedKanzaki : NIPPOU_CONDITION_DEFAULTS['神崎川'];
   }
 
   function saveNippouConditions() {
-    localStorage.setItem('nippou_condition_放出', document.getElementById('conditionHanaten').value);
+    localStorage.setItem('nippou_condition_大淀', document.getElementById('conditionOyodo').value);
+    localStorage.setItem('nippou_condition_神崎川', document.getElementById('conditionKanzaki').value);
     showToast('✅ 日報条件を保存しました');
   }
 
   function loadCareSettings() {
     const childrenJson = localStorage.getItem('cg_children');
-    const programsHanaten = localStorage.getItem('cg_programs_放出');
+    const programsOyodo = localStorage.getItem('cg_programs_大淀');
+    const programsKanzaki = localStorage.getItem('cg_programs_神崎川');
     const conditionsJson = localStorage.getItem('cg_conditions_v2');
 
     if (childrenJson) {
@@ -1568,24 +1492,27 @@ const AppSuite = (function() {
     }
 
     try {
-      const progsH = programsHanaten ? JSON.parse(programsHanaten) : [];
+      const progsO = programsOyodo ? JSON.parse(programsOyodo) : [];
+      const progsK = programsKanzaki ? JSON.parse(programsKanzaki) : [];
       document.getElementById('careProgramsList').textContent =
-        '【放出】' + (progsH.length ? progsH.join(', ') : '未設定');
+        '【大淀】' + (progsO.length ? progsO.join(', ') : '未設定') +
+        '\n【神崎川】' + (progsK.length ? progsK.join(', ') : '未設定');
     } catch(e) {}
 
     if (conditionsJson) {
       try {
         const conditions = JSON.parse(conditionsJson);
-        document.getElementById('careConditionHanaten').value = conditions['放出'] || '';
+        document.getElementById('careConditionOyodo').value = conditions['大淀'] || '';
+        document.getElementById('careConditionKanzaki').value = conditions['神崎川'] || '';
       } catch(e) {}
     }
   }
 
   function saveCareConditions() {
-    const existingJson = localStorage.getItem('cg_conditions_v2');
-    let conditions = {};
-    try { conditions = JSON.parse(existingJson) || {}; } catch(e) {}
-    conditions['放出'] = document.getElementById('careConditionHanaten').value;
+    const conditions = {
+      '大淀': document.getElementById('careConditionOyodo').value,
+      '神崎川': document.getElementById('careConditionKanzaki').value
+    };
     localStorage.setItem('cg_conditions_v2', JSON.stringify(conditions));
     showToast('✅ ケア記録条件を保存しました');
   }
@@ -1825,13 +1752,12 @@ const ChildrenApp = (function() {
       const initials = child.initial || child.name.charAt(0);
       html += `
         <div class="cl-child-item" style="display:flex;align-items:center;gap:10px;">
-          <div style="flex:1;display:flex;align-items:center;gap:10px;cursor:pointer;-webkit-tap-highlight-color:transparent;" onclick="APP_children_goToCare('${child.id}')">
+          <div style="flex:1;display:flex;align-items:center;gap:10px;cursor:pointer;-webkit-tap-highlight-color:transparent;" onclick="APP_children_openEditFromList('${child.id}')">
             <div class="cl-child-avatar">${initials}</div>
             <div class="cl-child-info">
               <div class="cl-child-name">${escapeHtml(child.name)}</div>
               <div class="cl-child-meta">${escapeHtml(child.grade || '')}${child.callName ? '　' + escapeHtml(child.callName) : ''}</div>
             </div>
-            <span style="color:var(--gray-300);font-size:13px;margin-left:auto;">ケア記録 ›</span>
           </div>
           <button onclick="event.stopPropagation();APP_children_openEditFromList('${child.id}')" style="flex:none;background:none;border:1px solid var(--gray-300);border-radius:6px;padding:6px 10px;font-size:12px;color:var(--gray-600);cursor:pointer;">編集</button>
         </div>`;
@@ -1986,16 +1912,9 @@ const ChildrenApp = (function() {
     showToast('✅ 削除しました');
   }
 
-  // 児童クリック → ケア記録に遷移（放出専用）
-  function goToCare(childId) {
-    APP_suite_switchPage('care');
-    CareApp.selectChild(childId);
-  }
-
   return {
     pageInit, onFacilityChange, onSearch, clearSearch, renderList, openAddModal, openEditModal,
-    openEditFromList, closeModal, closeModalOutside, saveChild, openDetail, goBack, confirmDelete, closeConfirm, deleteChild,
-    goToCare
+    openEditFromList, closeModal, closeModalOutside, saveChild, openDetail, goBack, confirmDelete, closeConfirm, deleteChild
   };
 })();
 
@@ -2014,7 +1933,6 @@ window.APP_children_goBack = () => ChildrenApp.goBack();
 window.APP_children_confirmDelete = () => ChildrenApp.confirmDelete();
 window.APP_children_closeConfirm = () => ChildrenApp.closeConfirm();
 window.APP_children_deleteChild = () => ChildrenApp.deleteChild();
-window.APP_children_goToCare = (id) => ChildrenApp.goToCare(id);
 
 // ================================================================
 // NIPPOU (DAILY REPORT) APP
@@ -2084,8 +2002,7 @@ const NippouApp = (function() {
     const upperDefault = '業務スタッフの健康状態　　良好';
     const lowerDefaults = {
       '大淀': '個別支援計画に沿った資料により、本日来所児童の共有を行いました（大淀）',
-      '神崎川': '個別支援計画に沿った資料により、本日来所児童の共有を行いました（神崎川）',
-      '放出': '個別支援計画に沿った資料により、本日来所児童の共有を行いました（放出）'
+      '神崎川': '個別支援計画に沿った資料により、本日来所児童の共有を行いました（神崎川）'
     };
     const savedUpper = localStorage.getItem(`nippou_upper_${f}`);
     const savedLower = localStorage.getItem(`nippou_lower_${f}`);
@@ -2466,205 +2383,21 @@ window.APP_nippou_clearAll = () => NippouApp.clearAll();
 
 const CareApp = (function() {
   const DEFAULT_CHILDREN = ['子ども①', '子ども②', '子ども③'];
-  const DEFAULT_PROGRAMS = ['レク・機能訓練の様子', '医療的ケアの様子', '感覚遊びの様子', '音楽活動の様子', 'リラクゼーションの様子', '制作活動の様子', '絵本の読み聞かせ'];
+  const DEFAULT_PROGRAMS = ['学習の様子', '英語の様子', 'プログラミングの様子', 'SSTの様子', 'クッキングの様子', '絵本の読み聞かせ', '工作の様子'];
   const DEFAULT_CONDITIONS = {
     '大淀':  `・300〜400文字前後\n・温かく丁寧\n・事実は変えない\n・福祉施設らしい表現\n・最後は前向きな締め\n・記号を組み合わせて作る顔文字を適度に使用\n・児童の名前は、本日の様子のみに適度に入れる\n・信頼を積み重ねられる設計\n・ケア記録の文章のみをコードでコピペできる形式で出力\n・コピペできない文章は出力しない\n・出力コード最後の「以上」は出力しない\n・保護者が安心できる文章に整える\n・事実の解釈や美化はせず、実際の様子に基づいて記述する\n・事実→過ごされているご様子・取り組みを中心として\n・次回の対応は出力しない\n・保護者が施設での様子を肯定的に受け止められる文章に`,
-    '神崎川': `・300〜400文字前後\n・温かく丁寧\n・事実は変えない\n・福祉施設らしい表現\n・最後は前向きな締め\n・記号を組み合わせて作る顔文字を適度に使用\n・児童の名前は、本日の様子のみに適度に入れる\n・信頼を積み重ねられる設計\n・ケア記録の文章のみをコードでコピペできる形式で出力\n・コピペできない文章は出力しない\n・出力コード最後の「以上」は出力しない\n・保護者が安心できる文章に整える\n・事実の解釈や美化はせず、実際の様子に基づいて記述する`,
-    '放出': `重度心身障がい児童・医療的ケア児童\n本日の様子をプロンプトに沿って作成し、下記の文章と一緒にケア記録全体を出力してください。\n本日も元気にご来所されております（^^）\nーーーーーーーーーーーーーーーーー\n＜本日のレク、機能訓練の様子＞\n＜医療的ケアの様子＞\nーーーーーーー\n本日もありがとうございました(^ ^)\n以上\nーーーーーーーーーーーーーー\n【作成条件】\n・500文字前後・医療的ケアの項目が多ければ文字数超過可能\n・温かく丁寧\n・事実は変えない\n・福祉施設らしい表現\n・感想は最小限\n・記号を組み合わせて作る顔文字を適度に使用\n・児童の名前は、＜本日のレク、機能訓練の様子＞のみに適度に入れる\n・信頼を積み重ねられる設計\n・ケア記録の文章のみをコードでコピペできる形式で出力\n・コピペできない文章は出力しない\n・出力コード最後の「以上」は出力しない\n・保護者が安心できる文章に整える\n・重心児童、自己表現に難しさがあるためスタッフが細かなサインを受け取り、翻訳、代弁が必要。ポジティブな表現で保護者に伝わる文章に\n・医療的ケアテンプレ、記入のないものは出力しない\n・情報の入力元に専門的用語・医療的用語が含まれた場合、保護者が読みやすいように変換して出力する`
+    '神崎川': `・300〜400文字前後\n・温かく丁寧\n・事実は変えない\n・福祉施設らしい表現\n・最後は前向きな締め\n・記号を組み合わせて作る顔文字を適度に使用\n・児童の名前は、本日の様子のみに適度に入れる\n・信頼を積み重ねられる設計\n・ケア記録の文章のみをコードでコピペできる形式で出力\n・コピペできない文章は出力しない\n・出力コード最後の「以上」は出力しない\n・保護者が安心できる文章に整える\n・事実の解釈や美化はせず、実際の様子に基づいて記述する`
   };
 
   const PROG_PLACEHOLDERS = {
-    'レク・機能訓練の様子': '本日のプログラム内容を記載してください',
-    '医療的ケアの様子':   '本日のプログラム内容を記載してください',
-    '感覚遊びの様子':    '本日のプログラム内容を記載してください',
-    '音楽活動の様子':    '本日のプログラム内容を記載してください',
-    'リラクゼーションの様子': '本日のプログラム内容を記載してください',
-    '制作活動の様子':    '本日のプログラム内容を記載してください',
-    '絵本の読み聞かせ':  '本日のプログラム内容を記載してください'
+    '学習の様子':       '例：算数プリントに取り組んでいます。',
+    '英語の様子':       '例：「Get Dressed for the Day Song」を用いて身に付けているお洋服に着目して発語を促すことを目的として行います。',
+    'プログラミングの様子': '例：Scratchでキャラクターを動かす課題に取り組んでいます。',
+    'SSTの様子':       '例：友達との会話ロールプレイを実施。順番を待つ練習を行います。',
+    'クッキングの様子': '例：「春キャベツのお好み焼き」「ホットプレートの使用を通して注意力を養う」「作業のルールを守りながら取り組む」ことを目的に行いました。',
+    '絵本の読み聞かせ': '例：「さくらがさくと」さく：とうごう なりさ\n桜が咲きはじめると、道行く人々は足をとめ...',
+    '工作の様子':      '例：紙コップロケットを制作。丁寧に色を塗り完成させることを目標に行います。'
   };
-
-  // ===== Medical Care Template (放出専用) =====
-  const MC_DEFAULT_CATEGORIES = [
-    { name: '基本', fields: ['来所時体温', 'SpO₂', '脈拍', '呼吸', '手足冷感'] },
-    { name: '呼吸', fields: ['胸の音', '痰の状態', '吸引実施', '酸素量'] },
-    { name: '摂取', fields: ['昼食量', 'おやつ', '水分量', '嘔吐'] },
-    { name: '排泄', fields: ['排尿回数', '排便回数', '便性状', '最終時間'] },
-    { name: '皮膚', fields: ['発赤部位', '処置内容'] },
-    { name: '入浴', fields: ['入浴', '入浴後の処置内容'] },
-    { name: '投薬・処置', fields: ['内服時間', '注入時間', '胃残', 'その他'] },
-    { name: '特記事項', fields: ['発作有無', '家庭からの申し送り', '保護者への伝達事項'] }
-  ];
-
-  function getMcCategories() {
-    try {
-      const saved = localStorage.getItem('mc_categories_放出');
-      if (saved) return JSON.parse(saved);
-    } catch(e) {}
-    return JSON.parse(JSON.stringify(MC_DEFAULT_CATEGORIES));
-  }
-
-  function saveMcCategories(cats) {
-    localStorage.setItem('mc_categories_放出', JSON.stringify(cats));
-  }
-
-  function renderMedicalCare() {
-    const container = document.getElementById('medicalCareCategories');
-    if (!container) return;
-    const cats = getMcCategories();
-    let html = '';
-    cats.forEach((cat, ci) => {
-      html += `<div class="mc-category">
-        <div class="mc-cat-header open" onclick="APP_care_toggleMcCat(this)">
-          <span>${cat.name}</span>
-          <span class="mc-toggle">▶</span>
-        </div>
-        <div class="mc-cat-body">`;
-      cat.fields.forEach((field, fi) => {
-        html += `<div class="mc-field">
-          <span class="mc-field-label">${field}</span>
-          <input type="text" class="mc-field-input" data-cat="${ci}" data-field="${fi}" placeholder="">
-          <button class="mc-field-remove" onclick="APP_care_removeMcField(${ci},${fi})" title="削除">×</button>
-        </div>`;
-      });
-      html += `<button class="mc-add-btn" onclick="APP_care_addMcField(${ci})">＋ 項目を追加</button>
-        </div>
-      </div>`;
-    });
-    container.innerHTML = html;
-  }
-
-  function toggleMcCat(header) {
-    header.classList.toggle('open');
-  }
-
-  function addMcField(catIndex) {
-    const name = prompt('追加する項目名を入力');
-    if (!name || !name.trim()) return;
-    const cats = getMcCategories();
-    cats[catIndex].fields.push(name.trim());
-    saveMcCategories(cats);
-    renderMedicalCare();
-  }
-
-  function removeMcField(catIndex, fieldIndex) {
-    const cats = getMcCategories();
-    cats[catIndex].fields.splice(fieldIndex, 1);
-    saveMcCategories(cats);
-    renderMedicalCare();
-  }
-
-  function collectMedicalCareData() {
-    const cats = getMcCategories();
-    const inputs = document.querySelectorAll('.mc-field-input');
-    let result = '';
-    let currentCat = '';
-    inputs.forEach(input => {
-      const val = input.value.trim();
-      if (!val) return;
-      const ci = parseInt(input.dataset.cat);
-      const fi = parseInt(input.dataset.field);
-      const catName = cats[ci].name;
-      const fieldName = cats[ci].fields[fi];
-      if (catName !== currentCat) {
-        result += `【${catName}】\n`;
-        currentCat = catName;
-      }
-      result += `${fieldName}：${val}\n`;
-    });
-    return result;
-  }
-  // ===== End Medical Care =====
-
-  // ===== 児童紐付け (放出専用) =====
-  let selectedChildId = null;
-  let selectedChildData = null; // { id, name, initial, ... }
-
-  function selectChild(childId) {
-    // 現在の児童のデータを保存してから切り替え
-    if (selectedChildId) saveChildCareData();
-
-    const raw = JSON.parse(localStorage.getItem('appletree_children') || '{}');
-    const children = Array.isArray(raw) ? raw : (raw.children ? raw.children : Object.values(raw));
-    const child = children.find(c => c.id === childId);
-    if (!child) return;
-
-    selectedChildId = childId;
-    selectedChildData = child;
-
-    // UIに反映
-    const bar = document.getElementById('selectedChildBar');
-    bar.style.display = 'flex';
-    document.getElementById('selectedChildAvatar').textContent = child.initial || child.name.charAt(0);
-    document.getElementById('selectedChildName').textContent = child.name;
-    document.getElementById('selectedChildMeta').textContent = (child.grade || '') + (child.callName ? '　' + child.callName : '');
-
-    // その児童のデータを読み込み
-    loadChildCareData(childId);
-  }
-
-  function clearSelectedChild() {
-    if (selectedChildId) saveChildCareData();
-    selectedChildId = null;
-    selectedChildData = null;
-    document.getElementById('selectedChildBar').style.display = 'none';
-    // フォームをクリア
-    document.getElementById('childNotes').value = '';
-    clearMcInputs();
-  }
-
-  function saveChildCareData() {
-    if (!selectedChildId) return;
-    const key = `care_child_${selectedChildId}`;
-    const notes = document.getElementById('childNotes').value;
-    const mcInputs = collectMcInputValues();
-    const data = { notes, mcInputs, savedAt: new Date().toISOString() };
-    localStorage.setItem(key, JSON.stringify(data));
-  }
-
-  function loadChildCareData(childId) {
-    const key = `care_child_${childId}`;
-    const saved = localStorage.getItem(key);
-    if (saved) {
-      try {
-        const data = JSON.parse(saved);
-        document.getElementById('childNotes').value = data.notes || '';
-        if (data.mcInputs) restoreMcInputValues(data.mcInputs);
-        else clearMcInputs();
-      } catch(e) {
-        document.getElementById('childNotes').value = '';
-        clearMcInputs();
-      }
-    } else {
-      document.getElementById('childNotes').value = '';
-      clearMcInputs();
-    }
-  }
-
-  function collectMcInputValues() {
-    const inputs = document.querySelectorAll('.mc-field-input');
-    const values = {};
-    inputs.forEach(input => {
-      const val = input.value.trim();
-      if (val) {
-        values[`${input.dataset.cat}_${input.dataset.field}`] = val;
-      }
-    });
-    return values;
-  }
-
-  function restoreMcInputValues(values) {
-    const inputs = document.querySelectorAll('.mc-field-input');
-    inputs.forEach(input => {
-      const key = `${input.dataset.cat}_${input.dataset.field}`;
-      input.value = values[key] || '';
-    });
-  }
-
-  function clearMcInputs() {
-    const inputs = document.querySelectorAll('.mc-field-input');
-    inputs.forEach(input => { input.value = ''; });
-  }
-  // ===== End 児童紐付け =====
 
   let state = {
     facility: currentFacility,
@@ -2693,12 +2426,10 @@ const CareApp = (function() {
       if (oldProgs) {
         localStorage.setItem('cg_programs_大淀', oldProgs);
         localStorage.setItem('cg_programs_神崎川', oldProgs);
-        localStorage.setItem('cg_programs_放出', oldProgs);
       }
       if (oldContents) {
         localStorage.setItem('cg_progContents_大淀', oldContents);
         localStorage.setItem('cg_progContents_神崎川', oldContents);
-        localStorage.setItem('cg_progContents_放出', oldContents);
       }
       localStorage.setItem('cg_migrated_facility_v1', '1');
     }
@@ -2706,7 +2437,6 @@ const CareApp = (function() {
     updateFacilityUI();
     renderProgramGrid();
     renderProgContentArea();
-    renderMedicalCare();
   }
 
   function onFacilityChange(facility) {
@@ -2715,7 +2445,6 @@ const CareApp = (function() {
     updateFacilityUI();
     renderProgramGrid();
     renderProgContentArea();
-    renderMedicalCare();
   }
 
   function updateFacilityUI() {
@@ -2831,12 +2560,9 @@ const CareApp = (function() {
       return;
     }
 
-    // 児童データを自動保存
-    if (selectedChildId) saveChildCareData();
-
     const todayNotes = document.getElementById('childNotes').value.trim();
     if (!todayNotes) {
-      showToast('⚠ 本日の様子を入力してください');
+      showToast('⚠ 前回の様子を入力してください');
       return;
     }
 
@@ -2868,49 +2594,21 @@ const CareApp = (function() {
         progText += `●${prog}\n${content}\n\n`;
       });
 
-      const systemPrompt = `あなたは放課後等デイサービス（重心児童・医療的ケア児童対応）のケア記録を作成するアシスタントです。
-以下のプログラム内容・児童の様子メモ・医療的ケア情報から、保護者向けのケア記録を作成してください。
+      const systemPrompt = `あなたは放課後等デイサービスのケア記録を作成するアシスタントです。
+以下のプログラム内容と児童の様子メモから、保護者向けのケア記録を作成してください。
 
-【出力フォーマット】
-＜本日のレク、機能訓練の様子＞と＜医療的ケアの様子＞の2セクションで構成してください。
-※冒頭の挨拶文・末尾の挨拶文はシステムが自動付与するため、出力しないでください。
-※区切り線（ーーー）も出力しないでください。
+【生成条件】
+${conditionText}
 
-【作成条件】
-・500文字前後（医療的ケアの項目が多ければ文字数超過可能）
-・温かく丁寧な文体
-・事実は変えない
-・福祉施設らしい表現
-・感想は最小限
-・記号を組み合わせて作る顔文字を適度に使用（例：(^^) (*^^*) (^_^) (^o^)）
-・児童名や呼び名は一切使用しない（「お子様」等の一般的な表現を使う）
-・信頼を積み重ねられる設計
-・保護者が安心できる文章に整える
-・重心児童は自己表現に難しさがあるため、スタッフが細かなサインを受け取り翻訳・代弁する。ポジティブな表現で保護者に伝わる文章にする
-・医療的ケアテンプレートで記入のない項目は出力しない
-・入力に専門用語・医療用語が含まれた場合、保護者が読みやすい表現に変換して出力する
-
-【医療的ケアの出力形式】
-・バイタル（体温・SpO₂・脈拍等）は「来所時体温○○℃、SpO₂○○％、脈拍○○回/分と安定して経過されています。」のように自然な文章で記述
-・排泄は回数・性状を簡潔に記述
-・皮膚・処置は部位と対応を記述
-・入浴実施の有無と入浴後の処置を記述
-・全体の経過を締めの一文でまとめる
-
-${conditionText ? '【追加条件】\\n' + conditionText + '\\n' : ''}
 【プライバシー保護ルール】
+- 児童名はイニシャル（A. B. C.等）のまま記載してください
 - 以下の情報は絶対に出力に含めないでください：
   ・生年月日 ・住所 ・保護者の連絡先
   ・障害名・診断名（特に詳細なもの）
   ・学校名＋名前の組み合わせ
 - 入力に上記が含まれていた場合、その部分は無視してください`;
 
-      // 医療的ケアデータを収集
-      const mcData = collectMedicalCareData();
-      const mcSection = mcData ? `\n＜医療的ケアの様子＞\n${mcData}` : '';
-
-      // ケア記録では児童名を送信しない（プライバシー保護）
-      const userMessage = `本日のプログラム：\n${progText}児童の様子：\n${sanitizedNotes}${mcSection}`;
+      const userMessage = `本日のプログラム：\n${progText}児童の様子：\n${sanitizedNotes}`;
 
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
@@ -2937,13 +2635,19 @@ ${conditionText ? '【追加条件】\\n' + conditionText + '\\n' : ''}
       const result = await response.json();
       let output = result.choices[0].message.content.trim();
 
-      // ケア記録では名前を復元しない（イニシャルのまま出力）
-      // output = restoreNamesInOutput(output);
+      // イニシャルを元の名前に復元
+      output = restoreNamesInOutput(output);
 
-      // 完成形を組み立て（docxプロンプトの形式に準拠）
-      let fullOutput = '本日も元気にご来所されております（^^）\n\nーーーーーーーーーーーーーーーーー\n\n';
-      fullOutput += output;
-      fullOutput += '\n\nーーーーーーー\n本日もありがとうございました(^ ^)';
+      // 完成形を組み立て（元アプリと同じ形式）
+      let fullOutput = '本日も元気に過ごされております♪\n\n';
+      if (state.todayPrograms.length > 0) {
+        fullOutput += 'ーーーーーーー\n';
+        state.todayPrograms.forEach(prog => {
+          const content = state.progContents[prog] || PROG_PLACEHOLDERS[prog] || prog;
+          fullOutput += `●${prog}\n${content}\n\n`;
+        });
+      }
+      fullOutput += output + '\n\nーーーーーーーー\n本日もありがとうございました(*^^*)';
 
       document.getElementById('careOutputBox').textContent = fullOutput;
       document.getElementById('careOutput').style.display = 'block';
@@ -3043,16 +2747,11 @@ ${conditionText ? '【追加条件】\\n' + conditionText + '\\n' : ''}
   return {
     pageInit, onFacilityChange, toggleTodayProgram, sendToAI,
     copyResult, clearResult, editPrograms, saveProgContent,
-    openProgSettings, closeProgSettings, addProgram, removeProgRow, saveProgSettings,
-    toggleMcCat, addMcField, removeMcField,
-    selectChild, clearSelectedChild, saveChildCareData
+    openProgSettings, closeProgSettings, addProgram, removeProgRow, saveProgSettings
   };
 })();
 
 window.APP_care_pageInit = () => CareApp.pageInit();
-window.APP_care_selectChild = (id) => CareApp.selectChild(id);
-window.APP_care_clearSelectedChild = () => CareApp.clearSelectedChild();
-window.APP_care_saveChildCareData = () => CareApp.saveChildCareData();
 window.APP_care_onFacilityChange = (f) => CareApp.onFacilityChange(f);
 window.APP_care_sendToAI = () => CareApp.sendToAI();
 window.APP_care_copyResult = () => CareApp.copyResult();
@@ -3064,9 +2763,6 @@ window.APP_care_closeProgSettings = () => CareApp.closeProgSettings();
 window.APP_care_addProgram = () => CareApp.addProgram();
 window.APP_care_removeProgRow = (btn) => CareApp.removeProgRow(btn);
 window.APP_care_saveProgSettings = () => CareApp.saveProgSettings();
-window.APP_care_toggleMcCat = (el) => CareApp.toggleMcCat(el);
-window.APP_care_addMcField = (ci) => CareApp.addMcField(ci);
-window.APP_care_removeMcField = (ci, fi) => CareApp.removeMcField(ci, fi);
 
 // ================================================================
 // FEEDBACK SYSTEM
