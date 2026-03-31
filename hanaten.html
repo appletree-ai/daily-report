@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>AppleTree Daily</title>
+<title>AppleTree Daily - 放出</title>
 <style>
 :root {
   --primary: #2b6cb0;
@@ -1023,10 +1023,9 @@ body {
   <button class="header-btn" onclick="APP_suite_openSettings()" title="設定">⚙</button>
 </div>
 
-<!-- ===== Facility Tabs (Shared) ===== -->
-<div class="facility-tabs">
-  <button class="facility-tab active" data-facility="大淀" onclick="APP_suite_switchFacility('大淀')">大淀</button>
-  <button class="facility-tab" data-facility="神崎川" onclick="APP_suite_switchFacility('神崎川')">神崎川</button>
+<!-- ===== Facility Tabs (Hidden - 放出専用) ===== -->
+<div class="facility-tabs" style="display:none;">
+  <button class="facility-tab active" data-facility="放出" onclick="APP_suite_switchFacility('放出')">放出</button>
 </div>
 
 <!-- ===== Page Containers ===== -->
@@ -1077,7 +1076,7 @@ body {
     <!-- Lower Fixed Text -->
     <div class="np-section">
       <div class="np-section-label">下部固定テキスト</div>
-      <textarea class="np-textarea" id="lowerText" rows="2" placeholder="下部固定テキストを入力">個別支援計画に沿った資料により、本日来所児童の共有を行いました</textarea>
+      <textarea class="np-textarea" id="lowerText" rows="2" placeholder="下部固定テキストを入力">個別支援計画に沿った資料により、本日来所児童の共有を行いました（放出）</textarea>
     </div>
 
     <!-- Generate Button -->
@@ -1241,14 +1240,9 @@ body {
         <!-- Nippou Settings -->
         <div id="nippou-tab" class="settings-content">
           <div class="modal-section">
-            <h3>作成条件（大淀）</h3>
+            <h3>作成条件（放出）</h3>
             <p>AIへの追加指示を記入できます</p>
-            <textarea id="conditionOyodo" rows="3" placeholder="例：特に活動内容を詳しく記述してください" class="cr-textarea"></textarea>
-          </div>
-          <div class="modal-section">
-            <h3>作成条件（神崎川）</h3>
-            <p>AIへの追加指示を記入できます</p>
-            <textarea id="conditionKanzaki" rows="3" placeholder="例：特に活動内容を詳しく記述してください" class="cr-textarea"></textarea>
+            <textarea id="conditionHanaten" rows="3" placeholder="例：特に活動内容を詳しく記述してください" class="cr-textarea"></textarea>
           </div>
           <div style="margin-top:12px;">
             <button class="btn btn-primary btn-sm" onclick="APP_suite_saveNippouConditions()" style="width:auto;">条件を保存</button>
@@ -1263,13 +1257,9 @@ body {
             <button class="btn btn-secondary btn-sm" onclick="APP_care_editPrograms()" style="width:auto;">編集</button>
           </div>
           <div class="modal-section">
-            <h3>ケア記録 生成条件（大淀）</h3>
-            <p style="font-size:12px; color:var(--gray-500); margin-bottom:6px;">保護者向けケア記録のAI生成条件です。現場の反応に合わせて調整してください。</p>
-            <textarea id="careConditionOyodo" rows="8" class="cr-textarea"></textarea>
-          </div>
-          <div class="modal-section">
-            <h3>ケア記録 生成条件（神崎川）</h3>
-            <textarea id="careConditionKanzaki" rows="8" class="cr-textarea"></textarea>
+            <h3>ケア記録 生成条件（放出）</h3>
+            <p style="font-size:12px; color:var(--gray-500); margin-bottom:6px;">重心・医ケア児童向けケア記録のAI生成条件です。現場の反応に合わせて調整してください。</p>
+            <textarea id="careConditionHanaten" rows="8" class="cr-textarea"></textarea>
           </div>
           <div style="margin-top:12px;">
             <button class="btn btn-primary btn-sm" onclick="APP_suite_saveCareConditions()" style="width:auto;">条件を保存</button>
@@ -1358,7 +1348,7 @@ body {
 // ================================================================
 
 let currentPage = 'children';
-let currentFacility = localStorage.getItem('suite_facility') || '大淀';
+let currentFacility = '放出'; // 放出専用：施設固定
 const pageInited = { children: false, nippou: false, care: false };
 
 function showToast(msg) {
@@ -1462,26 +1452,23 @@ const AppSuite = (function() {
 
   const NIPPOU_CONDITION_DEFAULTS = {
     '大淀': '・一次情報を元に文章を整理してください、実地指導時に役所の方に見られます\n・児童フルネーム：内容',
-    '神崎川': '・一次情報を元に文章を整理してください、実地指導時に役所の方に見られます\n・児童フルネーム：内容'
+    '神崎川': '・一次情報を元に文章を整理してください、実地指導時に役所の方に見られます\n・児童フルネーム：内容',
+    '放出': '・一次情報を元に文章を整理してください、実地指導時に役所の方に見られます\n・児童フルネーム：内容\n・重心児童・医療的ケア児童の記録に適した表現で'
   };
 
   function loadNippouConditions() {
-    const savedOyodo = localStorage.getItem('nippou_condition_大淀');
-    const savedKanzaki = localStorage.getItem('nippou_condition_神崎川');
-    document.getElementById('conditionOyodo').value = (savedOyodo !== null && savedOyodo.trim() !== '') ? savedOyodo : NIPPOU_CONDITION_DEFAULTS['大淀'];
-    document.getElementById('conditionKanzaki').value = (savedKanzaki !== null && savedKanzaki.trim() !== '') ? savedKanzaki : NIPPOU_CONDITION_DEFAULTS['神崎川'];
+    const savedHanaten = localStorage.getItem('nippou_condition_放出');
+    document.getElementById('conditionHanaten').value = (savedHanaten !== null && savedHanaten.trim() !== '') ? savedHanaten : NIPPOU_CONDITION_DEFAULTS['放出'];
   }
 
   function saveNippouConditions() {
-    localStorage.setItem('nippou_condition_大淀', document.getElementById('conditionOyodo').value);
-    localStorage.setItem('nippou_condition_神崎川', document.getElementById('conditionKanzaki').value);
+    localStorage.setItem('nippou_condition_放出', document.getElementById('conditionHanaten').value);
     showToast('✅ 日報条件を保存しました');
   }
 
   function loadCareSettings() {
     const childrenJson = localStorage.getItem('cg_children');
-    const programsOyodo = localStorage.getItem('cg_programs_大淀');
-    const programsKanzaki = localStorage.getItem('cg_programs_神崎川');
+    const programsHanaten = localStorage.getItem('cg_programs_放出');
     const conditionsJson = localStorage.getItem('cg_conditions_v2');
 
     if (childrenJson) {
@@ -1492,27 +1479,24 @@ const AppSuite = (function() {
     }
 
     try {
-      const progsO = programsOyodo ? JSON.parse(programsOyodo) : [];
-      const progsK = programsKanzaki ? JSON.parse(programsKanzaki) : [];
+      const progsH = programsHanaten ? JSON.parse(programsHanaten) : [];
       document.getElementById('careProgramsList').textContent =
-        '【大淀】' + (progsO.length ? progsO.join(', ') : '未設定') +
-        '\n【神崎川】' + (progsK.length ? progsK.join(', ') : '未設定');
+        '【放出】' + (progsH.length ? progsH.join(', ') : '未設定');
     } catch(e) {}
 
     if (conditionsJson) {
       try {
         const conditions = JSON.parse(conditionsJson);
-        document.getElementById('careConditionOyodo').value = conditions['大淀'] || '';
-        document.getElementById('careConditionKanzaki').value = conditions['神崎川'] || '';
+        document.getElementById('careConditionHanaten').value = conditions['放出'] || '';
       } catch(e) {}
     }
   }
 
   function saveCareConditions() {
-    const conditions = {
-      '大淀': document.getElementById('careConditionOyodo').value,
-      '神崎川': document.getElementById('careConditionKanzaki').value
-    };
+    const existingJson = localStorage.getItem('cg_conditions_v2');
+    let conditions = {};
+    try { conditions = JSON.parse(existingJson) || {}; } catch(e) {}
+    conditions['放出'] = document.getElementById('careConditionHanaten').value;
     localStorage.setItem('cg_conditions_v2', JSON.stringify(conditions));
     showToast('✅ ケア記録条件を保存しました');
   }
@@ -1982,7 +1966,8 @@ const NippouApp = (function() {
     const upperDefault = '業務スタッフの健康状態　　良好';
     const lowerDefaults = {
       '大淀': '個別支援計画に沿った資料により、本日来所児童の共有を行いました（大淀）',
-      '神崎川': '個別支援計画に沿った資料により、本日来所児童の共有を行いました（神崎川）'
+      '神崎川': '個別支援計画に沿った資料により、本日来所児童の共有を行いました（神崎川）',
+      '放出': '個別支援計画に沿った資料により、本日来所児童の共有を行いました（放出）'
     };
     const savedUpper = localStorage.getItem(`nippou_upper_${f}`);
     const savedLower = localStorage.getItem(`nippou_lower_${f}`);
@@ -2363,20 +2348,21 @@ window.APP_nippou_clearAll = () => NippouApp.clearAll();
 
 const CareApp = (function() {
   const DEFAULT_CHILDREN = ['子ども①', '子ども②', '子ども③'];
-  const DEFAULT_PROGRAMS = ['学習の様子', '英語の様子', 'プログラミングの様子', 'SSTの様子', 'クッキングの様子', '絵本の読み聞かせ', '工作の様子'];
+  const DEFAULT_PROGRAMS = ['レク・機能訓練の様子', '医療的ケアの様子', '感覚遊びの様子', '音楽活動の様子', 'リラクゼーションの様子', '制作活動の様子', '絵本の読み聞かせ'];
   const DEFAULT_CONDITIONS = {
     '大淀':  `・300〜400文字前後\n・温かく丁寧\n・事実は変えない\n・福祉施設らしい表現\n・最後は前向きな締め\n・記号を組み合わせて作る顔文字を適度に使用\n・児童の名前は、本日の様子のみに適度に入れる\n・信頼を積み重ねられる設計\n・ケア記録の文章のみをコードでコピペできる形式で出力\n・コピペできない文章は出力しない\n・出力コード最後の「以上」は出力しない\n・保護者が安心できる文章に整える\n・事実の解釈や美化はせず、実際の様子に基づいて記述する\n・事実→過ごされているご様子・取り組みを中心として\n・次回の対応は出力しない\n・保護者が施設での様子を肯定的に受け止められる文章に`,
-    '神崎川': `・300〜400文字前後\n・温かく丁寧\n・事実は変えない\n・福祉施設らしい表現\n・最後は前向きな締め\n・記号を組み合わせて作る顔文字を適度に使用\n・児童の名前は、本日の様子のみに適度に入れる\n・信頼を積み重ねられる設計\n・ケア記録の文章のみをコードでコピペできる形式で出力\n・コピペできない文章は出力しない\n・出力コード最後の「以上」は出力しない\n・保護者が安心できる文章に整える\n・事実の解釈や美化はせず、実際の様子に基づいて記述する`
+    '神崎川': `・300〜400文字前後\n・温かく丁寧\n・事実は変えない\n・福祉施設らしい表現\n・最後は前向きな締め\n・記号を組み合わせて作る顔文字を適度に使用\n・児童の名前は、本日の様子のみに適度に入れる\n・信頼を積み重ねられる設計\n・ケア記録の文章のみをコードでコピペできる形式で出力\n・コピペできない文章は出力しない\n・出力コード最後の「以上」は出力しない\n・保護者が安心できる文章に整える\n・事実の解釈や美化はせず、実際の様子に基づいて記述する`,
+    '放出': `重度心身障がい児童・医療的ケア児童\n本日の様子をプロンプトに沿って作成し、下記の文章と一緒にケア記録全体を出力してください。\n本日も元気にご来所されております（^^）\nーーーーーーーーーーーーーーーーー\n＜本日のレク、機能訓練の様子＞\n＜医療的ケアの様子＞\nーーーーーーー\n本日もありがとうございました(^ ^)\n以上\nーーーーーーーーーーーーーー\n【作成条件】\n・500文字前後・医療的ケアの項目が多ければ文字数超過可能\n・温かく丁寧\n・事実は変えない\n・福祉施設らしい表現\n・感想は最小限\n・記号を組み合わせて作る顔文字を適度に使用\n・児童の名前は、＜本日のレク、機能訓練の様子＞のみに適度に入れる\n・信頼を積み重ねられる設計\n・ケア記録の文章のみをコードでコピペできる形式で出力\n・コピペできない文章は出力しない\n・出力コード最後の「以上」は出力しない\n・保護者が安心できる文章に整える\n・重心児童、自己表現に難しさがあるためスタッフが細かなサインを受け取り、翻訳、代弁が必要。ポジティブな表現で保護者に伝わる文章に\n・医療的ケアテンプレ、記入のないものは出力しない\n・情報の入力元に専門的用語・医療的用語が含まれた場合、保護者が読みやすいように変換して出力する`
   };
 
   const PROG_PLACEHOLDERS = {
-    '学習の様子':       '例：算数プリントに取り組んでいます。',
-    '英語の様子':       '例：「Get Dressed for the Day Song」を用いて身に付けているお洋服に着目して発語を促すことを目的として行います。',
-    'プログラミングの様子': '例：Scratchでキャラクターを動かす課題に取り組んでいます。',
-    'SSTの様子':       '例：友達との会話ロールプレイを実施。順番を待つ練習を行います。',
-    'クッキングの様子': '例：「春キャベツのお好み焼き」「ホットプレートの使用を通して注意力を養う」「作業のルールを守りながら取り組む」ことを目的に行いました。',
-    '絵本の読み聞かせ': '例：「さくらがさくと」さく：とうごう なりさ\n桜が咲きはじめると、道行く人々は足をとめ...',
-    '工作の様子':      '例：紙コップロケットを制作。丁寧に色を塗り完成させることを目標に行います。'
+    'レク・機能訓練の様子': '例：ボール投げ・ニコニコ・キャッチが上手　仰臥位\nストレッチ・自分のペース・補助あり座位前屈３回',
+    '医療的ケアの様子':   '例：来所時体温：36.6 SpO₂：98 脈拍：110\n排尿：1回 排便：1回 便性状：拳2個\n入浴：あり 入浴後の処置：アズノール塗布',
+    '感覚遊びの様子':    '例：スライムの感触遊び。手のひらで触れ、笑顔が見られました。',
+    '音楽活動の様子':    '例：タンバリンを使ったリズム遊び。音に合わせて手を動かしていました。',
+    'リラクゼーションの様子': '例：アロマを使ったハンドマッサージ。リラックスした表情でした。',
+    '制作活動の様子':    '例：手形アートに取り組みました。絵の具の感触を楽しんでいました。',
+    '絵本の読み聞かせ':  '例：「はらぺこあおむし」を読みました。ページをめくるたびに注目していました。'
   };
 
   let state = {
@@ -2406,10 +2392,12 @@ const CareApp = (function() {
       if (oldProgs) {
         localStorage.setItem('cg_programs_大淀', oldProgs);
         localStorage.setItem('cg_programs_神崎川', oldProgs);
+        localStorage.setItem('cg_programs_放出', oldProgs);
       }
       if (oldContents) {
         localStorage.setItem('cg_progContents_大淀', oldContents);
         localStorage.setItem('cg_progContents_神崎川', oldContents);
+        localStorage.setItem('cg_progContents_放出', oldContents);
       }
       localStorage.setItem('cg_migrated_facility_v1', '1');
     }
