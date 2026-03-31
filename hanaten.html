@@ -1193,6 +1193,16 @@ body {
   <div class="cr-container">
     <div class="cr-facility-badge" id="facility-badge">📍 大淀</div>
 
+    <!-- Selected Child Bar (放出専用) -->
+    <div id="selectedChildBar" style="display:none;background:linear-gradient(135deg,var(--primary),var(--accent));color:var(--white);border-radius:var(--radius);padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;gap:12px;">
+      <div id="selectedChildAvatar" style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;"></div>
+      <div style="flex:1;min-width:0;">
+        <div id="selectedChildName" style="font-size:16px;font-weight:700;"></div>
+        <div id="selectedChildMeta" style="font-size:12px;opacity:0.8;"></div>
+      </div>
+      <button onclick="APP_care_clearSelectedChild()" style="background:rgba(255,255,255,0.15);border:none;color:var(--white);width:32px;height:32px;border-radius:50%;font-size:14px;cursor:pointer;flex-shrink:0;">×</button>
+    </div>
+
     <!-- Programs -->
     <div class="cr-section">
       <div class="cr-label">本日のプログラム</div>
@@ -1445,6 +1455,10 @@ function escapeHtml(str) {
 
 const AppSuite = (function() {
   function switchPage(pageId) {
+    // ケア記録から離れる時に児童データを自動保存
+    if (currentPage === 'care' && window.APP_care_saveChildCareData) {
+      window.APP_care_saveChildCareData();
+    }
     // Hide all pages
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     // Show target page
@@ -1811,12 +1825,13 @@ const ChildrenApp = (function() {
       const initials = child.initial || child.name.charAt(0);
       html += `
         <div class="cl-child-item" style="display:flex;align-items:center;gap:10px;">
-          <div style="flex:1;display:flex;align-items:center;gap:10px;cursor:pointer;-webkit-tap-highlight-color:transparent;" onclick="APP_children_openEditFromList('${child.id}')">
+          <div style="flex:1;display:flex;align-items:center;gap:10px;cursor:pointer;-webkit-tap-highlight-color:transparent;" onclick="APP_children_goToCare('${child.id}')">
             <div class="cl-child-avatar">${initials}</div>
             <div class="cl-child-info">
               <div class="cl-child-name">${escapeHtml(child.name)}</div>
               <div class="cl-child-meta">${escapeHtml(child.grade || '')}${child.callName ? '　' + escapeHtml(child.callName) : ''}</div>
             </div>
+            <span style="color:var(--gray-300);font-size:13px;margin-left:auto;">ケア記録 ›</span>
           </div>
           <button onclick="event.stopPropagation();APP_children_openEditFromList('${child.id}')" style="flex:none;background:none;border:1px solid var(--gray-300);border-radius:6px;padding:6px 10px;font-size:12px;color:var(--gray-600);cursor:pointer;">編集</button>
         </div>`;
@@ -1971,9 +1986,16 @@ const ChildrenApp = (function() {
     showToast('✅ 削除しました');
   }
 
+  // 児童クリック → ケア記録に遷移（放出専用）
+  function goToCare(childId) {
+    APP_suite_switchPage('care');
+    CareApp.selectChild(childId);
+  }
+
   return {
     pageInit, onFacilityChange, onSearch, clearSearch, renderList, openAddModal, openEditModal,
-    openEditFromList, closeModal, closeModalOutside, saveChild, openDetail, goBack, confirmDelete, closeConfirm, deleteChild
+    openEditFromList, closeModal, closeModalOutside, saveChild, openDetail, goBack, confirmDelete, closeConfirm, deleteChild,
+    goToCare
   };
 })();
 
@@ -1992,6 +2014,7 @@ window.APP_children_goBack = () => ChildrenApp.goBack();
 window.APP_children_confirmDelete = () => ChildrenApp.confirmDelete();
 window.APP_children_closeConfirm = () => ChildrenApp.closeConfirm();
 window.APP_children_deleteChild = () => ChildrenApp.deleteChild();
+window.APP_children_goToCare = (id) => ChildrenApp.goToCare(id);
 
 // ================================================================
 // NIPPOU (DAILY REPORT) APP
@@ -2552,6 +2575,96 @@ const CareApp = (function() {
   }
   // ===== End Medical Care =====
 
+  // ===== 児童紐付け (放出専用) =====
+  let selectedChildId = null;
+  let selectedChildData = null; // { id, name, initial, ... }
+
+  function selectChild(childId) {
+    // 現在の児童のデータを保存してから切り替え
+    if (selectedChildId) saveChildCareData();
+
+    const children = JSON.parse(localStorage.getItem('appletree_children') || '[]');
+    const child = children.find(c => c.id === childId);
+    if (!child) return;
+
+    selectedChildId = childId;
+    selectedChildData = child;
+
+    // UIに反映
+    const bar = document.getElementById('selectedChildBar');
+    bar.style.display = 'flex';
+    document.getElementById('selectedChildAvatar').textContent = child.initial || child.name.charAt(0);
+    document.getElementById('selectedChildName').textContent = child.name;
+    document.getElementById('selectedChildMeta').textContent = (child.grade || '') + (child.callName ? '　' + child.callName : '');
+
+    // その児童のデータを読み込み
+    loadChildCareData(childId);
+  }
+
+  function clearSelectedChild() {
+    if (selectedChildId) saveChildCareData();
+    selectedChildId = null;
+    selectedChildData = null;
+    document.getElementById('selectedChildBar').style.display = 'none';
+    // フォームをクリア
+    document.getElementById('childNotes').value = '';
+    clearMcInputs();
+  }
+
+  function saveChildCareData() {
+    if (!selectedChildId) return;
+    const key = `care_child_${selectedChildId}`;
+    const notes = document.getElementById('childNotes').value;
+    const mcInputs = collectMcInputValues();
+    const data = { notes, mcInputs, savedAt: new Date().toISOString() };
+    localStorage.setItem(key, JSON.stringify(data));
+  }
+
+  function loadChildCareData(childId) {
+    const key = `care_child_${childId}`;
+    const saved = localStorage.getItem(key);
+    if (saved) {
+      try {
+        const data = JSON.parse(saved);
+        document.getElementById('childNotes').value = data.notes || '';
+        if (data.mcInputs) restoreMcInputValues(data.mcInputs);
+        else clearMcInputs();
+      } catch(e) {
+        document.getElementById('childNotes').value = '';
+        clearMcInputs();
+      }
+    } else {
+      document.getElementById('childNotes').value = '';
+      clearMcInputs();
+    }
+  }
+
+  function collectMcInputValues() {
+    const inputs = document.querySelectorAll('.mc-field-input');
+    const values = {};
+    inputs.forEach(input => {
+      const val = input.value.trim();
+      if (val) {
+        values[`${input.dataset.cat}_${input.dataset.field}`] = val;
+      }
+    });
+    return values;
+  }
+
+  function restoreMcInputValues(values) {
+    const inputs = document.querySelectorAll('.mc-field-input');
+    inputs.forEach(input => {
+      const key = `${input.dataset.cat}_${input.dataset.field}`;
+      input.value = values[key] || '';
+    });
+  }
+
+  function clearMcInputs() {
+    const inputs = document.querySelectorAll('.mc-field-input');
+    inputs.forEach(input => { input.value = ''; });
+  }
+  // ===== End 児童紐付け =====
+
   let state = {
     facility: currentFacility,
     todayPrograms: [],
@@ -2717,9 +2830,12 @@ const CareApp = (function() {
       return;
     }
 
+    // 児童データを自動保存
+    if (selectedChildId) saveChildCareData();
+
     const todayNotes = document.getElementById('childNotes').value.trim();
     if (!todayNotes) {
-      showToast('⚠ 前回の様子を入力してください');
+      showToast('⚠ 本日の様子を入力してください');
       return;
     }
 
@@ -2769,7 +2885,10 @@ ${conditionText}
       const mcData = collectMedicalCareData();
       const mcSection = mcData ? `\n＜医療的ケアの様子＞\n${mcData}` : '';
 
-      const userMessage = `本日のプログラム：\n${progText}児童の様子：\n${sanitizedNotes}${mcSection}`;
+      // 児童情報（選択されている場合）
+      const childInfo = selectedChildData ? `対象児童：${selectedChildData.name}${selectedChildData.callName ? '（' + selectedChildData.callName + '）' : ''}\n\n` : '';
+
+      const userMessage = `${childInfo}本日のプログラム：\n${progText}児童の様子：\n${sanitizedNotes}${mcSection}`;
 
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
@@ -2909,11 +3028,15 @@ ${conditionText}
     pageInit, onFacilityChange, toggleTodayProgram, sendToAI,
     copyResult, clearResult, editPrograms, saveProgContent,
     openProgSettings, closeProgSettings, addProgram, removeProgRow, saveProgSettings,
-    toggleMcCat, addMcField, removeMcField
+    toggleMcCat, addMcField, removeMcField,
+    selectChild, clearSelectedChild, saveChildCareData
   };
 })();
 
 window.APP_care_pageInit = () => CareApp.pageInit();
+window.APP_care_selectChild = (id) => CareApp.selectChild(id);
+window.APP_care_clearSelectedChild = () => CareApp.clearSelectedChild();
+window.APP_care_saveChildCareData = () => CareApp.saveChildCareData();
 window.APP_care_onFacilityChange = (f) => CareApp.onFacilityChange(f);
 window.APP_care_sendToAI = () => CareApp.sendToAI();
 window.APP_care_copyResult = () => CareApp.copyResult();
